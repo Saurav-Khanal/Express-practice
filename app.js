@@ -4,10 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-
+const session=require("express-session");
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+const passport=require("passport");
 mongoose.connect("mongodb://127.0.0.1:27017/express-learn")
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
@@ -17,6 +17,18 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(session({
+  resave:false,
+  saveUninitialized:false,
+  secret:"hey hey"
+}))
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser(usersRouter.serializeUser());
+passport.deserializeUser(usersRouter.deserializeUser());
 
 app.use(logger('dev'));
 app.use(express.json());
